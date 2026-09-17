@@ -1,0 +1,58 @@
+package com.stacy.bookingservice.controller;
+
+import com.stacy.bookingservice.client.EventServiceClient;
+import com.stacy.bookingservice.dto.BookingRequest;
+import com.stacy.bookingservice.dto.BookingResponse;
+import com.stacy.bookingservice.dto.EventResponse;
+import com.stacy.bookingservice.model.Booking;
+import com.stacy.bookingservice.service.BookingService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.awt.print.Book;
+import java.util.List;
+
+@RestController
+public class BookingController {
+
+    @Autowired
+    BookingService bookingService;
+
+    @Autowired
+    EventServiceClient eventServiceClient;
+
+    @GetMapping("/bookings")
+    public List<Booking> getBookings() {
+        return bookingService.getBookings();
+    }
+
+    @GetMapping("/bookings/{id}")
+    public BookingResponse getBookingById(@PathVariable Long id){
+        return bookingService.getBookingById(id);
+    }
+
+    @PostMapping("/bookings")
+    public BookingResponse createBooking(@Valid @RequestBody BookingRequest bookingRequest){
+
+        Booking booking = new Booking(null, bookingRequest.getEventId(), bookingRequest.getCustomerName(), bookingRequest.getNumberOfSeats());
+        return bookingService.createBooking(booking);
+    }
+
+    @PutMapping("/bookings/{id}")
+    public BookingResponse updateBooking(@PathVariable Long id,@Valid @RequestBody BookingRequest request) {
+        Booking booking = new Booking(null, request.getEventId(), request.getCustomerName(), request.getNumberOfSeats());
+        return bookingService.updateBooking(id,booking);
+    }
+
+    @DeleteMapping("/bookings/{id}")
+    public void deleteBooking(@PathVariable Long id) {
+        bookingService.deleteBooking(id);
+    }
+
+    @GetMapping("/bookings/event/{eventId}")
+    public EventResponse getEvent(@PathVariable Long eventId){
+       return eventServiceClient.getEventById(eventId);
+    }
+
+}
