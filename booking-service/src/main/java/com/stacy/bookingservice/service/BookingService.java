@@ -22,6 +22,9 @@ public class BookingService {
     @Autowired
     EventServiceClient eventServiceClient;
 
+    @Autowired
+    RedisLockService redisLockService;
+
     public List<Booking> getBookings(){
         return bookingRepository.findAll();
     }
@@ -34,15 +37,25 @@ public class BookingService {
 
     public BookingResponse createBooking(Booking booking) {
 
-        EventResponse eventResponse = eventServiceClient.getEventById(booking.getEventId());
+        String lockKey = "lock:event:" + booking.getEventId();
 
-        if(eventResponse == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Event not found");
+        String lockValue = redisLockService.acquireLock(lockKey);
+
+        if(lockValue == null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Another booking is currently in progress for this event.");
         }
+
+
+        try {
+            eventServiceClient.reserveSeats(booking.getEventId(), booking.getNumberOfSeats());
 
             Booking savedBooking = bookingRepository.save(booking);
 
             return toResponse(savedBooking);
+        }
+        finally {
+            redisLockService.releaseLock(lockKey,lockValue);
+        }
 
     }
 

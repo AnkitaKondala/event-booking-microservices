@@ -50,4 +50,18 @@ public class EventService {
     public EventResponse toResponse(Event event) {
         return new EventResponse(event.getId(), event.getName(), event.getLocation(), event.getAvailableSeats());
     }
+
+    public EventResponse reserveSeats(Long id, int numberOfSeats) {
+
+        Event event = eventRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Event not found"));
+
+        if(event.getAvailableSeats() < numberOfSeats) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not enough seats available");
+        }
+
+        event.setAvailableSeats(event.getAvailableSeats() - numberOfSeats);
+         Event updatedEvent = eventRepository.save(event);
+
+         return toResponse(updatedEvent);
+    }
 }

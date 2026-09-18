@@ -6,8 +6,10 @@ import com.stacy.bookingservice.dto.BookingResponse;
 import com.stacy.bookingservice.dto.EventResponse;
 import com.stacy.bookingservice.model.Booking;
 import com.stacy.bookingservice.service.BookingService;
+import com.stacy.bookingservice.service.RedisLockService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Book;
@@ -20,7 +22,10 @@ public class BookingController {
     BookingService bookingService;
 
     @Autowired
-    EventServiceClient eventServiceClient;
+    RedisLockService redisLockService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @GetMapping("/bookings")
     public List<Booking> getBookings() {
@@ -50,9 +55,33 @@ public class BookingController {
         bookingService.deleteBooking(id);
     }
 
-    @GetMapping("/bookings/event/{eventId}")
-    public EventResponse getEvent(@PathVariable Long eventId){
-       return eventServiceClient.getEventById(eventId);
+    @GetMapping("/bookings/redis-test")
+    public String redisTest(){
+        redisTemplate.opsForValue().set("test-key","Redis is  working!");
+
+        return redisTemplate.opsForValue().get("test-key");
+    }
+
+    @GetMapping("/bookings/lock-test/{eventId}")
+    public String testLock(@PathVariable Long eventId){
+
+        String lockKey = "lock:event" + eventId;
+
+        String lockValue = redisLockService.acquireLock(lockKey);
+
+        if(lockValue == null) {
+            return "Could not acquire lock";
+        }
+
+        try {
+            Thread.sleep(5000);
+            return "Lock acquired successfully";
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return "Interrupted";
+        }finally {
+            redisLockService.releaseLock(lockKey, lockValue);
+        }
     }
 
 }

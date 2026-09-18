@@ -55,4 +55,9 @@ public class EventController {
 
         return eventService.toResponse(eventService.updateEvent(id,event));
     }
+
+    @PostMapping("/events/{id}/reserve")
+    public EventResponse reserveEvent(@PathVariable Long id, @RequestParam int numberOfSeats) {
+        return eventService.reserveSeats(id,numberOfSeats);
+    }
 }
