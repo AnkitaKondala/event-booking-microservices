@@ -23,7 +23,7 @@ public class RedisLockService {
 
         Boolean acquired = redisTemplate
                 .opsForValue()
-                .setIfAbsent(key,lockValue, Duration.ofSeconds(5));
+                .setIfAbsent(key,lockValue, Duration.ofSeconds(10));
 
         if(Boolean.TRUE.equals(acquired)) {
             return lockValue;
