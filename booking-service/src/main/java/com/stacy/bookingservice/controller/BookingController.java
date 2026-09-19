@@ -1,9 +1,7 @@
 package com.stacy.bookingservice.controller;
 
-import com.stacy.bookingservice.client.EventServiceClient;
 import com.stacy.bookingservice.dto.BookingRequest;
 import com.stacy.bookingservice.dto.BookingResponse;
-import com.stacy.bookingservice.dto.EventResponse;
 import com.stacy.bookingservice.model.Booking;
 import com.stacy.bookingservice.service.BookingService;
 import com.stacy.bookingservice.service.RedisLockService;
@@ -12,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Book;
 import java.util.List;
 
 @RestController

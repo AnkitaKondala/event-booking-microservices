@@ -33,7 +33,7 @@ public class EventServiceClient {
 
         try {
             return restClient
-                    .get()
+                    .post()
                     .uri(uriBuilder -> uriBuilder
                             .path("/events/{id}/reserve")
                             .queryParam("numberOfSeats",numberOfSeats)

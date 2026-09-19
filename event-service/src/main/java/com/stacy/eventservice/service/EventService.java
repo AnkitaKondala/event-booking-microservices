@@ -56,7 +56,7 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Event not found"));
 
         if(event.getAvailableSeats() < numberOfSeats) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not enough seats available");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Not enough seats available");
         }
 
         event.setAvailableSeats(event.getAvailableSeats() - numberOfSeats);

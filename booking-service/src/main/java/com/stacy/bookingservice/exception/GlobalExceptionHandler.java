@@ -1,4 +1,4 @@
-package com.stacy.bookingservice.event;
+package com.stacy.bookingservice.exception;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
