@@ -28,23 +28,22 @@ The system is being developed as a **microservices-based application** with sepa
 
 ```text
                          Client
-                           |
-                           |
-                  +--------+--------+
-                  |                 |
-                  v                 v
-            Event Service     Booking Service
-                  |                 |
-                  |                 |
-                  v                 v
-            PostgreSQL         PostgreSQL
-                  |                 |
-                  |            Redis Lock
-                  |                 |
-                  +--------+--------+
-                           |
-                    Service-to-Service
-                      Communication
+                            |
+                    +-------+-------+
+                    |               |
+                    v               v
+              Event Service    Booking Service
+                    |               |
+                    v               v
+               PostgreSQL       PostgreSQL
+                                    |
+                               Redis Lock
+                                    |
+                                    v
+                                RabbitMQ
+                                    |
+                                    v
+                          Notification Service
 ```
 
 ### Services
@@ -78,6 +77,15 @@ Responsible for booking-related operations:
 
 **Port:** `8081`
 
+Notification Service
+
+Responsible for processing booking events asynchronously:
+
+Consume booking events from RabbitMQ
+Process booking notifications
+
+**Port:** `8082`
+
 ---
 
 ## 🛠️ Technology Stack
@@ -96,6 +104,8 @@ Responsible for booking-related operations:
 | Maven             | Build and dependency management |
 | JUnit 5           | Testing                         |
 | Mockito           | Unit testing and mocking        |
+| Spring AMQP       | RabbitMQ integration            |
+| RabbitMQ          | Asynchronous messaging          |
 
 ---
 
@@ -267,6 +277,24 @@ Release Redis Lock
 ```
 
 This ensures that concurrent booking requests for the same event are coordinated before modifying seat availability.
+
+### 🔄 Asynchronous Booking Flow
+
+After a booking is successfully created:
+
+```text
+Booking Service
+      |
+      | BookingCreatedEvent
+      v
+  RabbitMQ
+      |
+      | booking.queue
+      v
+Notification Service
+```
+
+The Booking Service acts as the **producer**, while the Notification Service acts as the **consumer**.
 
 ---
 
@@ -627,6 +655,10 @@ This project is designed to demonstrate practical backend concepts including:
 * Docker
 * Unit testing
 * Concurrent request handling
+*  RabbitMQ
+* Asynchronous communication
+* Producer/consumer pattern
+* Event-driven communication
 
 ---
 
@@ -647,11 +679,6 @@ The project is intentionally being developed incrementally. Future improvements 
 
 ### 📨 Asynchronous Communication
 
-* [ ] Kafka or RabbitMQ
-* [ ] Event-driven booking flow
-* [ ] Notification Service
-* [ ] Booking events
-* [ ] Producer/consumer concepts
 * [ ] Handling message failures
 * [ ] Dead-letter queues
 
