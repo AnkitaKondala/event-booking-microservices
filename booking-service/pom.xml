@@ -68,6 +68,12 @@
             <scope>test</scope>
         </dependency>
 
+<!--        AMQP &#45;&#45;Advanced Message Queuing Protocol (RabbitMQ)-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
 	</dependencies>
 
 	<build>

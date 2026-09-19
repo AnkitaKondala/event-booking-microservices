@@ -4,6 +4,8 @@ import com.stacy.bookingservice.client.EventServiceClient;
 import com.stacy.bookingservice.dto.BookingRequest;
 import com.stacy.bookingservice.dto.BookingResponse;
 import com.stacy.bookingservice.dto.EventResponse;
+import com.stacy.bookingservice.event.BookingCreatedEvent;
+import com.stacy.bookingservice.messaging.BookingEventProducer;
 import com.stacy.bookingservice.model.Booking;
 import com.stacy.bookingservice.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class BookingService {
 
     @Autowired
     EventServiceClient eventServiceClient;
+
+    @Autowired
+    private BookingEventProducer bookingEventProducer;
 
     @Autowired
     RedisLockService redisLockService;
@@ -50,6 +55,10 @@ public class BookingService {
             eventServiceClient.reserveSeats(booking.getEventId(), booking.getNumberOfSeats());
 
             Booking savedBooking = bookingRepository.save(booking);
+
+            BookingCreatedEvent event = new BookingCreatedEvent(savedBooking.getId(), savedBooking.getEventId(), savedBooking.getCustomerName(), savedBooking.getNumberOfSeats());
+
+            bookingEventProducer.publishBookingCreated(event);
 
             return toResponse(savedBooking);
         }
