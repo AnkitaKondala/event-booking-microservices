@@ -1,9 +1,7 @@
 package com.stacy.bookingservice.service;
 
 import com.stacy.bookingservice.client.EventServiceClient;
-import com.stacy.bookingservice.dto.BookingRequest;
 import com.stacy.bookingservice.dto.BookingResponse;
-import com.stacy.bookingservice.dto.EventResponse;
 import com.stacy.bookingservice.event.BookingCreatedEvent;
 import com.stacy.bookingservice.messaging.BookingEventProducer;
 import com.stacy.bookingservice.model.Booking;
