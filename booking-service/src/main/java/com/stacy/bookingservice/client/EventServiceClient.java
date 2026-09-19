@@ -1,6 +1,7 @@
 package com.stacy.bookingservice.client;
 
 import com.stacy.bookingservice.dto.EventResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -12,8 +13,10 @@ public class EventServiceClient {
 
     private final RestClient restClient;
 
-    public EventServiceClient(){
-        this.restClient = RestClient.builder().baseUrl("http://localhost:8080").build();
+    public EventServiceClient(@Value("${event-service.url}") String baseUrl) {
+        this.restClient = RestClient.builder()
+                .baseUrl(baseUrl)
+                .build();
     }
 
     public EventResponse getEventById(Long eventId) {
